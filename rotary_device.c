@@ -34,11 +34,20 @@
 #define GPIO_ROTARY_B 17
 
 
+static void rotary_device_pdev_release(struct device *dev)
+{
+/* Needed to silence this message:
+Device 'xxx' does not have a release() function, it is broken and must be fixed
+*/
+}
+
+
 static struct platform_device rotary_device = 
 {
 	.name = DRV_NAME,
 	.id = 0,
 	.dev = {
+                .release = rotary_device_pdev_release,
 		.platform_data =  &(struct rotary_encoder_platform_data) {
 			.steps		= 24,
 			.axis		= ABS_X,
@@ -54,7 +63,7 @@ static struct platform_device rotary_device =
 
 static int __init rotary_init(void)
 {
-
+	request_module("rotary-encoder");
 	return platform_device_register(&rotary_device);
 }
 
