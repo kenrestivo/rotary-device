@@ -70,5 +70,5 @@ module_exit(rotary_exit);
 
 MODULE_ALIAS("platform:" DRV_NAME);
 MODULE_DESCRIPTION("Rotary device hack");
-MODULE_AUTHOR("Ken Restivo <ken@restivo.org>, Daniel Mack <daniel@caiaq.de>, Johan Hovold");
+MODULE_AUTHOR("Daniel Mack <daniel@caiaq.de>, Johan Hovold, Ken Restivo <ken@restivo.org>");
 MODULE_LICENSE("GPL v2");
