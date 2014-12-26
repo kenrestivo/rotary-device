@@ -31,6 +31,7 @@
 #define DRV_NAME "rotary-device"
 
 
+// TODO: module params, at load time. 
 #define GPIO_ROTARY_1A 4
 #define GPIO_ROTARY_1B 17
 #define GPIO_ROTARY_2A 27
@@ -57,7 +58,7 @@ static struct platform_device rotary_device_1 =
 			.relative_axis  = 1,
 			.gpio_a         = GPIO_ROTARY_1A,
 			.gpio_b         = GPIO_ROTARY_1B,
-			.inverted_a     = 0, // TODO: try 1?
+			.inverted_a     = 0, 
 			.inverted_b     = 0,
 		}
 	}
@@ -76,7 +77,7 @@ static struct platform_device rotary_device_2 =
 			.relative_axis  = 1,
 			.gpio_a         = GPIO_ROTARY_2A,
 			.gpio_b         = GPIO_ROTARY_2B,
-			.inverted_a     = 0, // TODO: try 1?
+			.inverted_a     = 0, 
 			.inverted_b     = 0,
 		}
 	}
@@ -87,7 +88,6 @@ static int __init rotary_init(void)
 {
 	int ret;
 	pr_info("initing rotary device\n");
-	request_module("rotary-encoder"); // TODO: not really necessary?
 	ret = platform_device_register(&rotary_device_1);
 	if (ret < 0) {
 		pr_err(DRV_NAME \
@@ -95,7 +95,7 @@ static int __init rotary_init(void)
 		       ret);
 		return ret;
 	}
-	// TODO: add_platform_devices() instead
+	// TODO: int platform_add_devices(struct platform_device **pdevs, int ndev);
 	ret = platform_device_register(&rotary_device_2);
 	if (ret < 0) {
 		pr_err(DRV_NAME \
