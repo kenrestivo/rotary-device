@@ -45,8 +45,8 @@ static void rotary_device_pdev_release(struct device *dev)
 
 static struct platform_device rotary_device = 
 {
-	.name = DRV_NAME,
-	.id = 0,
+	.name = "rotary-encoder", // the DRIVER name, not the device name.
+	.id = 0, // TODO: -1?
 	.dev = {
                 .release = rotary_device_pdev_release,
 		.platform_data =  &(struct rotary_encoder_platform_data) {
@@ -64,7 +64,8 @@ static struct platform_device rotary_device =
 static int __init rotary_init(void)
 {
 	int ret;
-	request_module("rotary-encoder");
+	pr_info("initing rotary device\n");
+	request_module("rotary-encoder"); // TODO: not really necessary?
 	ret = platform_device_register(&rotary_device);
 	if (ret < 0) {
 		pr_err(DRV_NAME \
@@ -72,6 +73,7 @@ static int __init rotary_init(void)
 		       ret);
 		return ret;
 	}
+
 	return 0;
 }
 

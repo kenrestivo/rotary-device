@@ -10,6 +10,5 @@ else
 # normal makefile
 KDIR ?= /mnt/externalsata/raspberry/linux-kernel
 default:
-	$(MAKE) -C $(KDIR) M=$$PWD ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- 
-# Module specific targets
+	$(MAKE) -C $(KDIR) M=$$PWD ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf-  
 endif
