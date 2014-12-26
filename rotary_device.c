@@ -31,8 +31,10 @@
 #define DRV_NAME "rotary-device"
 
 
-#define GPIO_ROTARY_A 4
-#define GPIO_ROTARY_B 17
+#define GPIO_ROTARY_1A 4
+#define GPIO_ROTARY_1B 17
+#define GPIO_ROTARY_2A 27
+#define GPIO_ROTARY_2B 18
 
 
 static void rotary_device_pdev_release(struct device *dev)
@@ -43,33 +45,61 @@ static void rotary_device_pdev_release(struct device *dev)
 }
 
 
-static struct platform_device rotary_device = 
+static struct platform_device rotary_device_1 = 
 {
 	.name = "rotary-encoder", // the DRIVER name, not the device name.
-	.id = 0, // TODO: -1?
+	.id = 0, 
 	.dev = {
                 .release = rotary_device_pdev_release,
 		.platform_data =  &(struct rotary_encoder_platform_data) {
 			.steps          = 24,
 			.axis           = REL_X,
 			.relative_axis  = 1,
-			.gpio_a         = GPIO_ROTARY_A,
-			.gpio_b         = GPIO_ROTARY_B,
+			.gpio_a         = GPIO_ROTARY_1A,
+			.gpio_b         = GPIO_ROTARY_1B,
 			.inverted_a     = 0, // TODO: try 1?
 			.inverted_b     = 0,
 		}
 	}
 };
 
+
+static struct platform_device rotary_device_2 = 
+{
+	.name = "rotary-encoder", // the DRIVER name, not the device name.
+	.id = 1, 
+	.dev = {
+                .release = rotary_device_pdev_release,
+		.platform_data =  &(struct rotary_encoder_platform_data) {
+			.steps          = 24,
+			.axis           = REL_X,
+			.relative_axis  = 1,
+			.gpio_a         = GPIO_ROTARY_2A,
+			.gpio_b         = GPIO_ROTARY_2B,
+			.inverted_a     = 0, // TODO: try 1?
+			.inverted_b     = 0,
+		}
+	}
+};
+
+
 static int __init rotary_init(void)
 {
 	int ret;
 	pr_info("initing rotary device\n");
 	request_module("rotary-encoder"); // TODO: not really necessary?
-	ret = platform_device_register(&rotary_device);
+	ret = platform_device_register(&rotary_device_1);
 	if (ret < 0) {
 		pr_err(DRV_NAME \
-		       ":    platform_device_register() returned %d\n",
+		       ":    platform_device_register(1) returned %d\n",
+		       ret);
+		return ret;
+	}
+	// TODO: add_platform_devices() instead
+	ret = platform_device_register(&rotary_device_2);
+	if (ret < 0) {
+		pr_err(DRV_NAME \
+		       ":    platform_device_register(2) returned %d\n",
 		       ret);
 		return ret;
 	}
@@ -79,7 +109,8 @@ static int __init rotary_init(void)
 
 static void __exit rotary_exit(void)
 {
-	platform_device_unregister(&rotary_device);
+	platform_device_unregister(&rotary_device_1);
+	platform_device_unregister(&rotary_device_2);
 }
 
 
