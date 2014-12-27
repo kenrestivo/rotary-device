@@ -1,5 +1,5 @@
 /*
- * rotary_encoder.c
+ * rotary_device.c
  *
  * (c) 2009 Daniel Mack <daniel@caiaq.de>
  * Copyright (C) 2011 Johan Hovold <jhovold@gmail.com>
@@ -30,12 +30,19 @@
 
 #define DRV_NAME "rotary-device"
 
+static int arr_argc = 0;
+static int rotary_1[2] = { -1, -1};
+static int rotary_2[2] = { -1, -1};
 
-// TODO: module params, at load time. 
-#define GPIO_ROTARY_1A 4
-#define GPIO_ROTARY_1B 17
-#define GPIO_ROTARY_2A 27
-#define GPIO_ROTARY_2B 18
+
+
+module_param_array(rotary_1, int, &arr_argc, 0000);
+MODULE_PARM_DESC(a_lines, "GPIO lines for rotary 1 a,b");
+
+module_param_array(rotary_2, int, &arr_argc, 0000);
+MODULE_PARM_DESC(a_lines, "GPIO lines for rotary 2 a,b");
+
+
 
 
 static void rotary_device_pdev_release(struct device *dev)
@@ -46,6 +53,7 @@ static void rotary_device_pdev_release(struct device *dev)
 }
 
 
+// TODO: kzalloc these, support rotaries 1 < n < 4
 static struct platform_device rotary_device_1 = 
 {
 	.name = "rotary-encoder", // the DRIVER name, not the device name.
@@ -56,8 +64,8 @@ static struct platform_device rotary_device_1 =
 			.steps          = 24,
 			.axis           = REL_X,
 			.relative_axis  = 1,
-			.gpio_a         = GPIO_ROTARY_1A,
-			.gpio_b         = GPIO_ROTARY_1B,
+			.gpio_a         = -1,
+			.gpio_b         = -1,
 			.inverted_a     = 0, 
 			.inverted_b     = 0,
 		}
@@ -75,8 +83,8 @@ static struct platform_device rotary_device_2 =
 			.steps          = 24,
 			.axis           = REL_X,
 			.relative_axis  = 1,
-			.gpio_a         = GPIO_ROTARY_2A,
-			.gpio_b         = GPIO_ROTARY_2B,
+			.gpio_a         = -1,
+			.gpio_b         = -1,
 			.inverted_a     = 0, 
 			.inverted_b     = 0,
 		}
@@ -87,7 +95,14 @@ static struct platform_device rotary_device_2 =
 static int __init rotary_init(void)
 {
 	int ret;
-	pr_info("initing rotary device\n");
+	struct rotary_encoder_platform_data * pdata;
+
+	// TODO: int platform_add_devices(struct platform_device **pdevs, int ndev);
+	
+	pr_info("initing first rotary device A=%d B=%d\n", rotary_1[0], rotary_1[1]);
+	pdata = (struct rotary_encoder_platform_data *) rotary_device_1.dev.platform_data;
+	pdata->gpio_a = rotary_1[0];
+	pdata->gpio_b = rotary_1[1];
 	ret = platform_device_register(&rotary_device_1);
 	if (ret < 0) {
 		pr_err(DRV_NAME \
@@ -95,22 +110,30 @@ static int __init rotary_init(void)
 		       ret);
 		return ret;
 	}
-	// TODO: int platform_add_devices(struct platform_device **pdevs, int ndev);
-	ret = platform_device_register(&rotary_device_2);
-	if (ret < 0) {
-		pr_err(DRV_NAME \
-		       ":    platform_device_register(2) returned %d\n",
-		       ret);
-		return ret;
-	}
 
+	// TODO: use linked list and nevermind all this boilerplate
+	if(arr_argc > 1){
+		pr_info("initing second rotary device A=%d B=%d\n", rotary_2[0], rotary_2[1]);
+		pdata = (struct rotary_encoder_platform_data *) rotary_device_2.dev.platform_data;
+		pdata->gpio_a = rotary_2[0];
+		pdata->gpio_b = rotary_2[1];
+		ret = platform_device_register(&rotary_device_2);
+		if (ret < 0) {
+			pr_err(DRV_NAME \
+			       ":    platform_device_register(2) returned %d\n",
+			       ret);
+			return ret;
+		}
+	}
 	return 0;
 }
 
 static void __exit rotary_exit(void)
 {
 	platform_device_unregister(&rotary_device_1);
-	platform_device_unregister(&rotary_device_2);
+	if(arr_argc > 1){
+		platform_device_unregister(&rotary_device_2);
+	}
 }
 
 
