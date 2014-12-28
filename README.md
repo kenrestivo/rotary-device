@@ -35,7 +35,7 @@ modprobe rotary_device rotary_1=a,b [rotary_2=a2,b2]
 
 This was a quick hack, so it doesn't support passing in all the parameters of the rotary_encoder module (i.e. steps, axis, relative_axis, inverted_a/b), but it could.
 
-It also only supports 0 < n < 2 rotaries, but with some linked list stuff and some kzalloc it could support an indefinite number.
+It also only supports 0 < n < 3 rotaries, but with some linked list stuff and some kzalloc it could support an indefinite number.
 
 ## Copyright
 
