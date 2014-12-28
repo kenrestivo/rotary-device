@@ -1,13 +1,15 @@
 rotary-device
 =============
 
-A platform hack to dynamically load/unload rotary encoder devices at runtime
+A platform hack to dynamically load/unload rotary encoder devices at runtime, inspired by [fbtft_device](https://github.com/notro/fbtft/wiki/fbtft_device "fbtft_device").
 
-Support 1 or 2 rotaries per board.
+Supports 1 or 2 rotaries per board.
+
+Does not set pullups; you have to do that separately using an external tool like gpio.
 
 ## Why?
 
-Loads/unloads a rotary_encoder device at runtime using modprobe. Device Tree would be better, but Raspberry Pi default kernels don't use Device Tree, and I needed to use default Raspberry kernel configurations on this project.
+Loads/unloads a rotary_encoder device at runtime using modprobe. Device Tree would be better, but Raspberry Pi kernels don't use Device Tree by default, and I didn't have the option to experiment with DT on Pi for this project.
 
 ## Building
 
@@ -21,11 +23,12 @@ make KDIR=/path/to/kernel-sources PATH=$PATH:/path/to/arm-linux-gnueabi/toolchai
 
 ## Usage
 
-Where A and B are the A and B signal lines
+Where 'a' and 'b' are the GPIO signal lines, and rotary_2 is optional:
 
 ```sh
-modprobe rotary_device rotary_1=a,b rotary_2=a',b'
+modprobe rotary_device rotary_1=a,b [rotary_2=a2,b2]
 ```
+
 
 
 ## Limitations
