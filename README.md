@@ -1,7 +1,7 @@
 rotary-device
 =============
 
-A platform hack to dynamically load/unload rotary encoder devices at runtime, inspired by [fbtft_device](https://github.com/notro/fbtft/wiki/fbtft_device "fbtft_device").
+A platform hack to dynamically load/unload [rotary encoder](https://www.kernel.org/doc/Documentation/input/rotary-encoder.txt) devices at runtime, inspired by [fbtft_device](https://github.com/notro/fbtft/wiki/fbtft_device "fbtft_device").
 
 Supports 1 or 2 rotaries per board.
 
