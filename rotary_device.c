@@ -53,7 +53,7 @@ static void rotary_device_pdev_release(struct device *dev)
 }
 
 
-// TODO: kzalloc these, support rotaries 1 < n < 4
+// TODO: kzalloc these, support rotaries 1 < n 
 static struct platform_device rotary_device_1 = 
 {
 	.name = "rotary-encoder", // the DRIVER name, not the device name.
