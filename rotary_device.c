@@ -64,8 +64,6 @@ static struct platform_device rotary_device_1 =
 			.steps          = 24,
 			.axis           = REL_X,
 			.relative_axis  = 1,
-			.gpio_a         = -1,
-			.gpio_b         = -1,
 			.inverted_a     = 0, 
 			.inverted_b     = 0,
 		}
@@ -83,8 +81,6 @@ static struct platform_device rotary_device_2 =
 			.steps          = 24,
 			.axis           = REL_X,
 			.relative_axis  = 1,
-			.gpio_a         = -1,
-			.gpio_b         = -1,
 			.inverted_a     = 0, 
 			.inverted_b     = 0,
 		}
