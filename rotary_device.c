@@ -44,92 +44,109 @@ MODULE_PARM_DESC(a_lines, "GPIO lines for rotary 2 a,b");
 
 
 
-
 static void rotary_device_pdev_release(struct device *dev)
 {
-/* Needed to silence this message:
-   Device 'xxx' does not have a release() function, it is broken and must be fixed
-*/
+  /* Needed to silence this message:
+     Device 'xxx' does not have a release() function, it is broken and must be fixed
+  */
 }
 
 
 // TODO: kzalloc these, support rotaries 1 < n 
 static struct platform_device rotary_device_1 = 
-{
-	.name = "rotary-encoder", // the DRIVER name, not the device name.
-	.id = 0, 
-	.dev = {
-                .release = rotary_device_pdev_release,
-		.platform_data =  &(struct rotary_encoder_platform_data) {
-			.steps          = 24,
-			.axis           = REL_X,
-			.relative_axis  = 1,
-			.inverted_a     = 0, 
-			.inverted_b     = 0,
-		}
-	}
-};
+  {
+    .name = "rotary-encoder", // the DRIVER name, not the device name.
+    .id = 0, 
+    .dev = {
+      .release = rotary_device_pdev_release,
+      .platform_data =  &(struct rotary_encoder_platform_data) {
+	.steps          = 24,
+	.axis           = REL_X,
+	.relative_axis  = 1,
+	.inverted_a     = 0, 
+	.inverted_b     = 0,
+      }
+    }
+  };
 
 
 static struct platform_device rotary_device_2 = 
-{
-	.name = "rotary-encoder", // the DRIVER name, not the device name.
-	.id = 1, 
-	.dev = {
-                .release = rotary_device_pdev_release,
-		.platform_data =  &(struct rotary_encoder_platform_data) {
-			.steps          = 24,
-			.axis           = REL_X,
-			.relative_axis  = 1,
-			.inverted_a     = 0, 
-			.inverted_b     = 0,
-		}
-	}
-};
+  {
+    .name = "rotary-encoder", // the DRIVER name, not the device name.
+    .id = 1, 
+    .dev = {
+      .release = rotary_device_pdev_release,
+      .platform_data =  &(struct rotary_encoder_platform_data) {
+	.steps          = 24,
+	.axis           = REL_X,
+	.relative_axis  = 1,
+	.inverted_a     = 0, 
+	.inverted_b     = 0,
+      }
+    }
+  };
 
 
 static int __init rotary_init(void)
 {
-	int ret;
-	struct rotary_encoder_platform_data * pdata;
+  int ret;
+  struct rotary_encoder_platform_data * pdata;
 
-	// TODO: int platform_add_devices(struct platform_device **pdevs, int ndev);
+  // check for valid/legal rotary ids
+  if(rotary_1[0] < 1){
+    pr_err(DRV_NAME ": invalid pin %d", rotary_1[0]);
+      return -EINVAL;
+  }
+  if(rotary_1[1] < 1){
+    pr_err(DRV_NAME ": invalid pin %d", rotary_1[1]);
+      return -EINVAL;
+  }
+  if(rotary_2[0] < 1){
+    pr_err(DRV_NAME ": invalid pin %d", rotary_2[0]);
+      return -EINVAL;
+  }
+  if(rotary_2[0] < 1){ 
+    pr_err(DRV_NAME ": invalid pin %d", rotary_2[0]);
+      return -EINVAL;
+  }
+
+  // TODO: int platform_add_devices(struct platform_device **pdevs, int ndev);
 	
-	pr_info("initing first rotary device A=%d B=%d\n", rotary_1[0], rotary_1[1]);
-	pdata = (struct rotary_encoder_platform_data *) rotary_device_1.dev.platform_data;
-	pdata->gpio_a = rotary_1[0];
-	pdata->gpio_b = rotary_1[1];
-	ret = platform_device_register(&rotary_device_1);
-	if (ret < 0) {
-		pr_err(DRV_NAME \
-		       ":    platform_device_register(1) returned %d\n",
-		       ret);
-		return ret;
-	}
+  pr_info("initing first rotary device A=%d B=%d\n", rotary_1[0], rotary_1[1]);
+  pdata = (struct rotary_encoder_platform_data *) rotary_device_1.dev.platform_data;
+  pdata->gpio_a = rotary_1[0];
+  pdata->gpio_b = rotary_1[1];
+  ret = platform_device_register(&rotary_device_1);
+  if (ret < 0) {
+    pr_err(DRV_NAME \
+	   ":    platform_device_register(1) returned %d\n",
+	   ret);
+    return ret;
+  }
 
-	// TODO: use linked list and nevermind all this boilerplate
-	if(arr_argc > 1){
-		pr_info("initing second rotary device A=%d B=%d\n", rotary_2[0], rotary_2[1]);
-		pdata = (struct rotary_encoder_platform_data *) rotary_device_2.dev.platform_data;
-		pdata->gpio_a = rotary_2[0];
-		pdata->gpio_b = rotary_2[1];
-		ret = platform_device_register(&rotary_device_2);
-		if (ret < 0) {
-			pr_err(DRV_NAME \
-			       ":    platform_device_register(2) returned %d\n",
-			       ret);
-			return ret;
-		}
-	}
-	return 0;
+  // TODO: use linked list and nevermind all this boilerplate
+  if(arr_argc > 1){
+    pr_info("initing second rotary device A=%d B=%d\n", rotary_2[0], rotary_2[1]);
+    pdata = (struct rotary_encoder_platform_data *) rotary_device_2.dev.platform_data;
+    pdata->gpio_a = rotary_2[0];
+    pdata->gpio_b = rotary_2[1];
+    ret = platform_device_register(&rotary_device_2);
+    if (ret < 0) {
+      pr_err(DRV_NAME \
+	     ":    platform_device_register(2) returned %d\n",
+	     ret);
+      return ret;
+    }
+  }
+  return 0;
 }
 
 static void __exit rotary_exit(void)
 {
-	platform_device_unregister(&rotary_device_1);
-	if(arr_argc > 1){
-		platform_device_unregister(&rotary_device_2);
-	}
+  platform_device_unregister(&rotary_device_1);
+  if(arr_argc > 1){
+    platform_device_unregister(&rotary_device_2);
+  }
 }
 
 
