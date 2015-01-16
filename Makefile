@@ -12,3 +12,6 @@ KDIR ?= /mnt/sdcard/src-cache/raspberry-kernel
 default:
 	$(MAKE) -C $(KDIR) M=$$PWD ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf-  
 endif
+
+
+## install into /lib/modules/`uname -r`/kernel/drivers/input/misc
